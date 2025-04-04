@@ -1,0 +1,17 @@
+//
+//  SongerApp.swift
+//  Songer
+//
+//  Created by Kacper Grabiec on 04/04/2025.
+//
+
+import SwiftUI
+
+@main
+struct SongerApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+        }
+    }
+}
