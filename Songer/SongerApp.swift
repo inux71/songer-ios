@@ -11,7 +11,9 @@ import SwiftUI
 struct SongerApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack {
+                PreferencesListView()
+            }
         }
     }
 }

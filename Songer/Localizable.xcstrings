@@ -1,0 +1,15 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Add preferences" : {
+      "comment" : "Add preferences view navigation title"
+    },
+    "Settings" : {
+      "comment" : "Settings view navigation title"
+    },
+    "Your preferences" : {
+      "comment" : "Preferences list view navigation title"
+    }
+  },
+  "version" : "1.0"
+}
