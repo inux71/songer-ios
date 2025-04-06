@@ -4,8 +4,23 @@
     "Add preferences" : {
       "comment" : "Add preferences view navigation title"
     },
+    "Apperance" : {
+      "comment" : "Settings apperance section header"
+    },
+    "Clear data" : {
+      "comment" : "Clear data settings button"
+    },
+    "Dark" : {
+      "comment" : "Dark mode"
+    },
+    "Light" : {
+      "comment" : "Light mode"
+    },
     "Settings" : {
       "comment" : "Settings view navigation title"
+    },
+    "Theme" : {
+      "comment" : "Theme settings option"
     },
     "Your preferences" : {
       "comment" : "Preferences list view navigation title"
