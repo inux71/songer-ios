@@ -1,6 +1,12 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%lld/5 songs rated" : {
+      "comment" : "Add preferences view progress bar"
+    },
+    "0:46" : {
+
+    },
     "Add preferences" : {
       "comment" : "Add preferences view navigation title"
     },
@@ -13,14 +19,35 @@
     "Dark" : {
       "comment" : "Dark mode"
     },
+    "Dislike" : {
+
+    },
+    "Finish" : {
+      "comment" : "Add preferences view finish test button"
+    },
     "Light" : {
       "comment" : "Light mode"
+    },
+    "Like" : {
+
+    },
+    "Play" : {
+
+    },
+    "Rating completed!" : {
+      "comment" : "Add preferences view rating completed header"
     },
     "Settings" : {
       "comment" : "Settings view navigation title"
     },
+    "Song %lld" : {
+      "comment" : "Add preferences view current song name"
+    },
     "Theme" : {
       "comment" : "Theme settings option"
+    },
+    "You successfully defined your music preferences. Click the button below to finish the test." : {
+      "comment" : "Add preferences view rating completed text"
     },
     "Your preferences" : {
       "comment" : "Preferences list view navigation title"
