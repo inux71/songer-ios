@@ -8,12 +8,20 @@
 import SwiftUI
 
 struct PreferencesListView: View {
-    @StateObject
-    private var viewModel = PreferencesListViewModel()
+    @StateObject private var viewModel = PreferencesListViewModel()
     
     var body: some View {
-        List {
-            
+        List($viewModel.preferences, id: \.self, editActions: .delete) { $preference in
+            NavigationLink(destination: PreferencesView(title: preference)) {
+                PreferencesListItem(
+                    title: preference,
+                    genres: [
+                        "Pop",
+                        "Rock",
+                        "Hip-hop"
+                    ]
+                )
+            }
         }
         .navigationTitle(Text(
             "Your preferences",
