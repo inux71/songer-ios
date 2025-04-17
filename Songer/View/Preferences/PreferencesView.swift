@@ -16,43 +16,49 @@ struct PreferencesView: View {
         self.title = title
     }
     
+    private func formattedDuration(from seconds: Int?) -> String {
+        guard let seconds = seconds else { return "" }
+        let minutesPart = seconds / 60
+        let secondsPart = seconds % 60
+        
+        return String(format: "%d:%02d", minutesPart, secondsPart)
+    }
+    
     var body: some View {
         ZStack(alignment: .bottom) {
             List(viewModel.songs, id: \.self, selection: $viewModel.selectedSong) { song in
-                SongItem(title: song)
+                SongItem(title: song.title)
             }
             
             VStack {
                 HStack {
-                    Text(
-                        "\(viewModel.selectedSong ?? "")",
-                        comment: "Preferences view currently playing song title"
-                    )
+                    Text("\(viewModel.selectedSong?.title ?? "")")
                         .font(.headline)
                     
                     Spacer()
                     
-                    Text(
-                        "\(viewModel.selectedSong != nil ? "0:46" : "")",
-                        comment: "Preferences view currently playing song duration"
-                    )
+                    Text(formattedDuration(from: viewModel.selectedSong?.duration))
                 }
                 
                 ProgressView(value: 0.2)
                 
                 HStack {
                     Button("Previous", systemImage: "backward.circle") {
-                        // to do
+                        viewModel.playPreviousSong()
                     }
                     
-                    Button("Play", systemImage: "play.circle") {
-                        // to do
+                    Button(
+                        viewModel.isPlaying ? "Pause" : "Play",
+                        systemImage: viewModel.isPlaying ? "pause.circle" : "play.circle"
+                    ) {
+                        viewModel.playPauseSong()
                     }
                     
                     Button("Next", systemImage: "forward.circle") {
-                        // to do
+                        viewModel.playNextSong()
                     }
                 }
+                .disabled(viewModel.selectedSong == nil)
                 .padding(.top)
                 .labelStyle(.iconOnly)
                 .font(.system(size: 32))

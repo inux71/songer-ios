@@ -12,12 +12,17 @@ struct SongerApp: App {
     @AppStorage(UserDefaultsKeys.THEME)
     private var theme: String = ""
     
+    private var colorScheme: ColorScheme {
+        .from(theme)
+    }
+    
     var body: some Scene {
         WindowGroup {
             NavigationStack {
                 PreferencesListView()
-                    .preferredColorScheme(ColorScheme.from(theme))
             }
+            .preferredColorScheme(colorScheme)
+            .tint(colorScheme == .light ? .black : .white)
         }
     }
 }
