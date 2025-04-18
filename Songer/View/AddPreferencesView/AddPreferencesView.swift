@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct AddPreferencesView: View {
+    @AppStorage(UserDefaultsKeys.THEME) private var theme: String = ""
     @Environment(\.dismiss) var dismiss
-    
     @StateObject private var viewModel = AddPreferencesViewModel()
     
     var body: some View {
@@ -21,6 +21,7 @@ struct AddPreferencesView: View {
                     "\(viewModel.currentSongIndex)/5 songs rated",
                     comment: "Add preferences view progress bar"
                 )
+                .padding(.horizontal)
             }
             
             Spacer()
@@ -74,15 +75,16 @@ struct AddPreferencesView: View {
                         )
                         .multilineTextAlignment(.center)
                         
-                        Spacer()
-                        
                         Button(action: {
                             dismiss()
                         }) {
                             Text("Finish", comment: "Add preferences view finish test button")
                                 .frame(maxWidth: .infinity)
+                                .foregroundStyle(ColorScheme.from(theme) == .light ? .white : .black)
                         }
                         .buttonStyle(.borderedProminent)
+                        
+                        Spacer()
                     }
                 }
                 .frame(width: geometry.size.width * 0.75)

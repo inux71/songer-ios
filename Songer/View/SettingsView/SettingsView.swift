@@ -23,6 +23,7 @@ struct SettingsView: View {
                 } label: {
                     Text("Theme", comment: "Theme settings option")
                 }
+                .tint(.gray)
             }
             
             Section {
