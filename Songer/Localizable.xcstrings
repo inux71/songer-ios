@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%@" : {
-      "comment" : "Preferences view currently playing song duration\nPreferences view currently playing song title"
-    },
     "%lld/5 songs rated" : {
       "comment" : "Add preferences view progress bar"
     },
@@ -34,16 +31,7 @@
     "Like" : {
 
     },
-    "Next" : {
-
-    },
-    "Pause" : {
-
-    },
     "Play" : {
-
-    },
-    "Previous" : {
 
     },
     "Rating completed!" : {

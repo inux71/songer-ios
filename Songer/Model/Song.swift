@@ -7,8 +7,8 @@
 
 import Foundation
 
-struct Song : Hashable {
+struct Song: Hashable {
     let id: Int
     let title: String
-    let duration: Int // in seconds
+    let path: String
 }

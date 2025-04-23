@@ -5,26 +5,67 @@
 //  Created by Kacper Grabiec on 08/04/2025.
 //
 
+import AVFAudio
 import Foundation
 
 class PreferencesViewModel: ObservableObject {
+    private var audioPlayer: AVAudioPlayer?
+    private var timer: Timer?
+    
     let songs: [Song] = [
-        Song(id: 1, title: "24K magic", duration: 120),
-        Song(id: 2, title: "Don't", duration: 180),
-        Song(id: 3, title: "Unstoppable", duration: 90),
+        Song(id: 1, title: "24K magic", path: "test_tone.wav"),
+        Song(id: 2, title: "Don't", path: "test_tone.wav"),
+        Song(id: 3, title: "Unstoppable", path: "test_tone.wav"),
     ]
     
-    @Published var isPlaying: Bool = false
+    @Published var currentTime: TimeInterval = 0
     @Published var selectedSong: Song? = nil {
         didSet {
-            isPlaying = true
+            guard let song = selectedSong else { return }
+            playSong(song: song)
         }
+    }
+    
+    var isPlaying: Bool {
+        audioPlayer?.isPlaying ?? false
+    }
+    
+    var duration: TimeInterval? {
+        audioPlayer?.duration
     }
     
     private var selectedSongIndex: Int? {
         guard let selected = selectedSong else { return nil }
         
         return songs.firstIndex(where: { $0.id == selected.id })
+    }
+    
+    private func stopTimer() {
+        timer?.invalidate()
+        timer = nil
+    }
+    
+    private func startTimer() {
+        stopTimer()
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
+            self.currentTime = self.audioPlayer?.currentTime ?? 0
+        }
+    }
+    
+    private func playSong(song: Song) {
+        stopSong()
+        
+        let path = Bundle.main.path(forResource: song.path, ofType: nil)!
+        let url = URL(fileURLWithPath: path)
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer?.play()
+            startTimer()
+        } catch {
+            print("Error playing audio: \(error)")
+        }
     }
     
     func playPreviousSong() {
@@ -35,7 +76,15 @@ class PreferencesViewModel: ObservableObject {
     }
     
     func playPauseSong() {
-        isPlaying.toggle()
+        guard let isPlaying: Bool = audioPlayer?.isPlaying else { return }
+        
+        if isPlaying {
+            audioPlayer?.pause()
+            stopTimer()
+        } else {
+            audioPlayer?.play()
+            startTimer()
+        }
     }
     
     func playNextSong() {
@@ -43,5 +92,10 @@ class PreferencesViewModel: ObservableObject {
         
         let nextIndex = (currentIndex + 1) % songs.count
         selectedSong = songs[nextIndex]
+    }
+    
+    func stopSong() {
+        audioPlayer?.stop()
+        stopTimer()
     }
 }

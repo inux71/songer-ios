@@ -16,10 +16,10 @@ struct PreferencesView: View {
         self.title = title
     }
     
-    private func formattedDuration(from seconds: Int?) -> String {
+    private func formattedDuration(from seconds: TimeInterval?) -> String {
         guard let seconds = seconds else { return "" }
-        let minutesPart = seconds / 60
-        let secondsPart = seconds % 60
+        let minutesPart = Int(seconds) / 60
+        let secondsPart = Int(seconds) % 60
         
         return String(format: "%d:%02d", minutesPart, secondsPart)
     }
@@ -32,30 +32,30 @@ struct PreferencesView: View {
             
             VStack {
                 HStack {
-                    Text("\(viewModel.selectedSong?.title ?? "")")
+                    Text(viewModel.selectedSong?.title ?? "")
                         .font(.headline)
                     
                     Spacer()
                     
-                    Text(formattedDuration(from: viewModel.selectedSong?.duration))
+                    Text(formattedDuration(from: viewModel.duration))
                 }
                 
-                ProgressView(value: 0.2)
+                ProgressView(
+                    value: viewModel.currentTime,
+                    total: viewModel.duration ?? 1
+                )
                 
                 HStack {
-                    Button("Previous", systemImage: "backward.circle") {
-                        viewModel.playPreviousSong()
+                    Button(action: viewModel.playPreviousSong) {
+                        Image(systemName: "backward.circle")
                     }
                     
-                    Button(
-                        viewModel.isPlaying ? "Pause" : "Play",
-                        systemImage: viewModel.isPlaying ? "pause.circle" : "play.circle"
-                    ) {
-                        viewModel.playPauseSong()
+                    Button(action: viewModel.playPauseSong) {
+                        Image(systemName: viewModel.isPlaying ? "pause.circle" : "play.circle")
                     }
                     
-                    Button("Next", systemImage: "forward.circle") {
-                        viewModel.playNextSong()
+                    Button(action: viewModel.playNextSong) {
+                        Image(systemName: "forward.circle")
                     }
                 }
                 .disabled(viewModel.selectedSong == nil)
@@ -66,6 +66,9 @@ struct PreferencesView: View {
             .padding()
         }
         .navigationTitle(title)
+        .onDisappear {
+            viewModel.stopSong()
+        }
     }
 }
 
