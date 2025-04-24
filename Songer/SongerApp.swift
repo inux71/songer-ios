@@ -23,6 +23,7 @@ struct SongerApp: App {
             }
             .preferredColorScheme(colorScheme)
             .tint(colorScheme == .light ? .black : .white)
+            .environmentObject(AudioManager())
         }
     }
 }

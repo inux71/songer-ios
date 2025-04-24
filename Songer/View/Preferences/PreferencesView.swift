@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct PreferencesView: View {
+    @EnvironmentObject private var audioManager: AudioManager
+    
     @StateObject private var viewModel = PreferencesViewModel()
     
     let title: String
@@ -16,18 +18,14 @@ struct PreferencesView: View {
         self.title = title
     }
     
-    private func formattedDuration(from seconds: TimeInterval?) -> String {
-        guard let seconds = seconds else { return "" }
-        let minutesPart = Int(seconds) / 60
-        let secondsPart = Int(seconds) % 60
-        
-        return String(format: "%d:%02d", minutesPart, secondsPart)
-    }
-    
     var body: some View {
         ZStack(alignment: .bottom) {
             List(viewModel.songs, id: \.self, selection: $viewModel.selectedSong) { song in
                 SongItem(title: song.title)
+            }
+            .onChange(of: viewModel.selectedSong) { _, selectedSong in
+                guard let song = selectedSong else { return }
+                audioManager.play(path: song.path)
             }
             
             VStack {
@@ -37,24 +35,34 @@ struct PreferencesView: View {
                     
                     Spacer()
                     
-                    Text(formattedDuration(from: viewModel.duration))
+                    Text(audioManager.timeRemaining?.formatted ?? "")
                 }
                 
                 ProgressView(
-                    value: viewModel.currentTime,
-                    total: viewModel.duration ?? 1
+                    value: audioManager.currentTime,
+                    total: audioManager.duration ?? 1
                 )
                 
                 HStack {
-                    Button(action: viewModel.playPreviousSong) {
+                    Button(action: {
+                        viewModel.setPreviousSong()
+                        
+                        guard let song: Song = viewModel.selectedSong else { return }
+                        audioManager.play(path: song.path)
+                    }) {
                         Image(systemName: "backward.circle")
                     }
                     
-                    Button(action: viewModel.playPauseSong) {
-                        Image(systemName: viewModel.isPlaying ? "pause.circle" : "play.circle")
+                    Button(action: audioManager.playPause) {
+                        Image(systemName: audioManager.isPlaying ? "pause.circle" : "play.circle")
                     }
                     
-                    Button(action: viewModel.playNextSong) {
+                    Button(action: {
+                        viewModel.setNextSong()
+                        
+                        guard let song: Song = viewModel.selectedSong else { return }
+                        audioManager.play(path: song.path)
+                    }) {
                         Image(systemName: "forward.circle")
                     }
                 }
@@ -67,7 +75,7 @@ struct PreferencesView: View {
         }
         .navigationTitle(title)
         .onDisappear {
-            viewModel.stopSong()
+            audioManager.stop()
         }
     }
 }
@@ -75,5 +83,6 @@ struct PreferencesView: View {
 #Preview {
     NavigationStack {
         PreferencesView(title: "Preferences 1")
+            .environmentObject(AudioManager())
     }
 }

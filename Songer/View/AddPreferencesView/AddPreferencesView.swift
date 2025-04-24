@@ -9,7 +9,10 @@ import SwiftUI
 
 struct AddPreferencesView: View {
     @AppStorage(UserDefaultsKeys.THEME) private var theme: String = ""
+    
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject private var audioManager: AudioManager
+    
     @StateObject private var viewModel = AddPreferencesViewModel()
     
     var body: some View {
@@ -18,7 +21,7 @@ struct AddPreferencesView: View {
                 EmptyView()
             } currentValueLabel: {
                 Text(
-                    "\(viewModel.currentSongIndex)/5 songs rated",
+                    "\(viewModel.currentSongIndex)/\(viewModel.songs.count) songs rated",
                     comment: "Add preferences view progress bar"
                 )
                 .padding(.horizontal)
@@ -32,30 +35,36 @@ struct AddPreferencesView: View {
                         Image(systemName: "play.square.stack")
                             .font(.system(size: 128))
                         
-                        Text(
-                            "Song \(viewModel.currentSongIndex + 1)",
-                            comment: "Add preferences view current song name"
-                        )
+                        Text(viewModel.songs[viewModel.currentSongIndex].title)
                         .font(.system(size: 32, weight: .bold))
                         
-                        ProgressView(value: 0.2) {
+                        ProgressView(
+                            value: audioManager.currentTime,
+                            total: audioManager.duration ?? 1
+                        ) {
                             EmptyView()
                         } currentValueLabel: {
-                            Text("0:46")
+                            Text(audioManager.currentTime?.formatted ?? "")
                         }
                         
                         HStack {
-                            Button("Dislike", systemImage: "xmark.circle") {
+                            Button(action: {
                                 viewModel.currentSongIndex += 1
+                            }) {
+                                Image(systemName: "xmark.circle")
                             }
                             
-                            Button("Play", systemImage: "play.circle") {
-                                // to do
+                            Button(action: {
+                                audioManager.play(path: viewModel.songs[viewModel.currentSongIndex].path)
+                            }) {
+                                Image(systemName: "play.circle")
                             }
                             .font(.system(size: 64))
                             
-                            Button("Like", systemImage: "heart.circle") {
+                            Button(action: {
                                 viewModel.currentSongIndex += 1
+                            }) {
+                                Image(systemName: "heart.circle")
                             }
                         }
                         .labelStyle(.iconOnly)
@@ -97,11 +106,15 @@ struct AddPreferencesView: View {
             "Add preferences",
             comment: "Add preferences view navigation title"
         ))
+        .onDisappear {
+            audioManager.stop()
+        }
     }
 }
 
 #Preview {
     NavigationStack {
         AddPreferencesView()
+            .environmentObject(AudioManager())
     }
 }

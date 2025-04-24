@@ -1,11 +1,16 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%lld/5 songs rated" : {
-      "comment" : "Add preferences view progress bar"
-    },
-    "0:46" : {
-
+    "%lld/%lld songs rated" : {
+      "comment" : "Add preferences view progress bar",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$lld/%2$lld songs rated"
+          }
+        }
+      }
     },
     "Add preferences" : {
       "comment" : "Add preferences view navigation title"
@@ -19,29 +24,17 @@
     "Dark" : {
       "comment" : "Dark mode"
     },
-    "Dislike" : {
-
-    },
     "Finish" : {
       "comment" : "Add preferences view finish test button"
     },
     "Light" : {
       "comment" : "Light mode"
     },
-    "Like" : {
-
-    },
-    "Play" : {
-
-    },
     "Rating completed!" : {
       "comment" : "Add preferences view rating completed header"
     },
     "Settings" : {
       "comment" : "Settings view navigation title"
-    },
-    "Song %lld" : {
-      "comment" : "Add preferences view current song name"
     },
     "Theme" : {
       "comment" : "Theme settings option"
