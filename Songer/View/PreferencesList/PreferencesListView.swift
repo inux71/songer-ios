@@ -11,16 +11,33 @@ struct PreferencesListView: View {
     @StateObject private var viewModel = PreferencesListViewModel()
     
     var body: some View {
-        List($viewModel.preferences, id: \.self, editActions: .delete) { $preference in
-            NavigationLink(destination: PreferencesView(title: preference)) {
-                PreferencesListItem(
-                    title: preference,
-                    genres: [
-                        "Pop",
-                        "Rock",
-                        "Hip-hop"
-                    ]
+        Group {
+            if viewModel.isLoading {
+                ProgressView()
+            } else if viewModel.preferences.isEmpty {
+                Text(
+                    "Your preference's list is empty.",
+                    comment: "Preferences list view no preferences message"
                 )
+            } else {
+                List($viewModel.preferences, id: \.id, editActions: .delete) { $preference in
+                    NavigationLink(destination: PreferencesView(title: preference.title)) {
+                        PreferencesListItem(
+                            title: preference.title,
+                            genres: preference.genres
+                        )
+                    }
+                }
+                .refreshable {
+                    Task {
+                        await viewModel.getPreferences()
+                    }
+                }
+            }
+        }
+        .onAppear {
+            Task {
+                await viewModel.getPreferences()
             }
         }
         .navigationTitle(Text(

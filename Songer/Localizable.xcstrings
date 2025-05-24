@@ -42,6 +42,9 @@
     "You successfully defined your music preferences. Click the button below to finish the test." : {
       "comment" : "Add preferences view rating completed text"
     },
+    "Your preference's list is empty." : {
+      "comment" : "Preferences list view no preferences message"
+    },
     "Your preferences" : {
       "comment" : "Preferences list view navigation title"
     }
