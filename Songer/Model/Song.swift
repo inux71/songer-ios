@@ -7,8 +7,10 @@
 
 import Foundation
 
-struct Song: Hashable {
+struct Song: Hashable, Codable {
     let id: Int
     let title: String
-    let path: String
+    let artist: String
+    let filePath: String
+    let genre: String
 }

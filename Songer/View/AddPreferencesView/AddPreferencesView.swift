@@ -8,8 +8,6 @@
 import SwiftUI
 
 struct AddPreferencesView: View {
-    @AppStorage(UserDefaultsKeys.THEME) private var theme: String = ""
-    
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject private var audioManager: AudioManager
     
@@ -35,8 +33,15 @@ struct AddPreferencesView: View {
                         Image(systemName: "play.square.stack")
                             .font(.system(size: 128))
                         
-                        Text(viewModel.songs[viewModel.currentSongIndex].title)
-                        .font(.system(size: 32, weight: .bold))
+                        if viewModel.songs.isEmpty {
+                            Text(
+                                "-",
+                                comment: "Song title placeholder"
+                            )
+                        } else {
+                            Text(viewModel.songs[viewModel.currentSongIndex].title)
+                                .font(.system(size: 32, weight: .bold))
+                        }
                         
                         ProgressView(
                             value: audioManager.currentTime,
@@ -55,13 +60,14 @@ struct AddPreferencesView: View {
                             }
                             
                             Button(action: {
-                                audioManager.play(path: viewModel.songs[viewModel.currentSongIndex].path)
+                                audioManager.play(path: viewModel.songs[viewModel.currentSongIndex].filePath)
                             }) {
                                 Image(systemName: "play.circle")
                             }
                             .font(.system(size: 64))
                             
                             Button(action: {
+                                viewModel.likedGenres.insert(viewModel.songs[viewModel.currentSongIndex].genre)
                                 viewModel.currentSongIndex += 1
                             }) {
                                 Image(systemName: "heart.circle")
@@ -69,31 +75,32 @@ struct AddPreferencesView: View {
                         }
                         .labelStyle(.iconOnly)
                         .font(.system(size: 48))
+                        .disabled(viewModel.songs.isEmpty)
                     } else {
-                        Spacer()
-                        
-                        Image(systemName: "checkmark.circle")
-                            .font(.system(size: 64))
-                        
-                        Text("Rating completed!", comment: "Add preferences view rating completed header")
-                            .font(.system(size: 32, weight: .bold))
-                        
-                        Text(
-                            "You successfully defined your music preferences. Click the button below to finish the test.",
-                            comment: "Add preferences view rating completed text"
+                        ContentUnavailableView(
+                            label: {
+                                Label(
+                                    "Rating completed!",
+                                    systemImage: "checkmark.circle"
+                                )
+                            },
+                            description: {
+                                Text(
+                                    "You successfully defined your music preferences. Click the button below to finish the test.",
+                                    comment: "Add preferences view rating completed text"
+                                )
+                            },
+                            actions: {
+                                Button(action: {
+                                    dismiss()
+                                }) {
+                                    Text(
+                                        "Finish",
+                                        comment: "Add preferences view finish test button"
+                                    )
+                                }
+                            }
                         )
-                        .multilineTextAlignment(.center)
-                        
-                        Button(action: {
-                            dismiss()
-                        }) {
-                            Text("Finish", comment: "Add preferences view finish test button")
-                                .frame(maxWidth: .infinity)
-                                .foregroundStyle(ColorScheme.from(theme) == .light ? .white : .black)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        
-                        Spacer()
                     }
                 }
                 .frame(width: geometry.size.width * 0.75)
@@ -106,6 +113,11 @@ struct AddPreferencesView: View {
             "Add preferences",
             comment: "Add preferences view navigation title"
         ))
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+        }
         .onDisappear {
             audioManager.stop()
         }

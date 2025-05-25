@@ -8,15 +8,44 @@
 import Foundation
 
 class AddPreferencesViewModel: ObservableObject {
-    let songs: [Song] = [
-        Song(id: 1, title: "24K magic", path: "test_tone.wav"),
-        Song(id: 2, title: "Don't", path: "test_tone.wav"),
-        Song(id: 3, title: "Unstoppable", path: "test_tone.wav"),
-    ]
-    
+    @Published var isLoading: Bool = false
+    @Published var songs: [Song] = []
     @Published var currentSongIndex: Int = 0
     
+    var likedGenres: Set<String> = Set()
+    
     var progress: Float {
-        Float(currentSongIndex) / Float(songs.count)
+        guard !songs.isEmpty else { return 1 }
+        return Float(currentSongIndex) / Float(songs.count)
+    }
+    
+    init() {
+        Task {
+            await getSongs()
+        }
+    }
+    
+    @MainActor
+    private func getSongs() async {
+        isLoading = true
+        
+        defer {
+            isLoading = false
+        }
+        
+        do {
+            songs = try await NetworkManager.shared.getAll(path: "songs/random")
+        } catch let error as NetworkError {
+            switch error {
+            case .invalidURL:
+                print("Invalid URL")
+            case .badResponse:
+                print("Bad response")
+            case .decodingFailed:
+                print("Decoding failed")
+            }
+        } catch {
+            print("Unexpected error: \(error)")
+        }
     }
 }
