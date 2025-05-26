@@ -92,7 +92,11 @@ struct AddPreferencesView: View {
                             },
                             actions: {
                                 Button(action: {
-                                    dismiss()
+                                    Task {
+                                        await viewModel.uploadPreference()
+                                        
+                                        dismiss()
+                                    }
                                 }) {
                                     Text(
                                         "Finish",

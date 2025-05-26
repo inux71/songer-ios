@@ -43,6 +43,43 @@ class AddPreferencesViewModel: ObservableObject {
                 print("Bad response")
             case .decodingFailed:
                 print("Decoding failed")
+            case .encodingFailed:
+                print("Encoding failed")
+            }
+        } catch {
+            print("Unexpected error: \(error)")
+        }
+    }
+    
+    @MainActor
+    func uploadPreference() async {
+        isLoading = true
+        
+        defer {
+            isLoading = false
+        }
+        
+        let preference: Preference = Preference(
+            id: -1,
+            title: "My new preference",
+            genres: Array(likedGenres)
+        )
+        
+        do {
+            _ = try await NetworkManager.shared.create(
+                path: "preferences",
+                data: preference
+            )
+        } catch let error as NetworkError {
+            switch error {
+            case .invalidURL:
+                print("Invalid URL")
+            case .badResponse:
+                print("Bad response")
+            case .decodingFailed:
+                print("Decoding failed")
+            case .encodingFailed:
+                print("Encoding failed")
             }
         } catch {
             print("Unexpected error: \(error)")
