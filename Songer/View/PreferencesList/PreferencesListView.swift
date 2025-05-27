@@ -11,28 +11,56 @@ struct PreferencesListView: View {
     @StateObject private var viewModel = PreferencesListViewModel()
     
     var body: some View {
-        Group {
+        List {
+            ForEach(viewModel.filteredPreferences, id: \.id) { preference in
+                NavigationLink(destination: PreferencesView(title: preference.title)) {
+                    PreferencesListItem(
+                        title: preference.title,
+                        genres: preference.genres
+                    )
+                }
+            }
+            .onDelete { indexSet in
+                Task {
+                    await viewModel.deletePreference(indexSet: indexSet)
+                }
+            }
+        }
+        .overlay {
             if viewModel.isLoading {
                 ProgressView()
             } else if viewModel.preferences.isEmpty {
-                Text(
-                    "Your preference's list is empty.",
-                    comment: "Preferences list view no preferences message"
-                )
-            } else {
-                List($viewModel.preferences, id: \.id, editActions: .delete) { $preference in
-                    NavigationLink(destination: PreferencesView(title: preference.title)) {
-                        PreferencesListItem(
-                            title: preference.title,
-                            genres: preference.genres
+                ContentUnavailableView(
+                    label: {
+                        Label(
+                            "No preferences",
+                            systemImage: "music.note.list"
                         )
+                    },
+                    description: {
+                        Text(
+                            "Add new preferences to get started",
+                            comment: "Empty preference's list description"
+                        )
+                    },
+                    actions: {
+                        NavigationLink {
+                            AddPreferencesView()
+                        } label: {
+                            Text(
+                                "Add preferences",
+                                comment: "Add preferences button label"
+                            )
+                        }
                     }
-                }
-                .refreshable {
-                    Task {
-                        await viewModel.getPreferences()
-                    }
-                }
+                )
+            } else if viewModel.filteredPreferences.isEmpty {
+                ContentUnavailableView.search
+            }
+        }
+        .refreshable {
+            Task {
+                await viewModel.getPreferences()
             }
         }
         .onAppear {
