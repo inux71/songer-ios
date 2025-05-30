@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "" : {
+
+    },
     "-" : {
       "comment" : "Song title placeholder"
     },
@@ -30,6 +33,9 @@
     "Dark" : {
       "comment" : "Dark mode"
     },
+    "Enter new name" : {
+
+    },
     "Finish" : {
       "comment" : "Add preferences view finish test button"
     },
@@ -39,8 +45,14 @@
     "No preferences" : {
 
     },
+    "OK" : {
+
+    },
     "Rating completed!" : {
       "comment" : "Add preferences view rating completed header"
+    },
+    "Rename Preference" : {
+
     },
     "Settings" : {
       "comment" : "Settings view navigation title"

@@ -12,20 +12,25 @@ struct PreferencesView: View {
     
     @StateObject private var viewModel = PreferencesViewModel()
     
-    let title: String
+    @State private var isPresented: Bool = false
+    @State private var title: String
+    @State private var newTitle: String = ""
     
-    init(title: String) {
+    let id: Int
+    
+    init(id: Int, title: String) {
+        self.id = id
         self.title = title
     }
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            List(viewModel.songs, id: \.self, selection: $viewModel.selectedSong) { song in
+            List(viewModel.songs, id: \.id, selection: $viewModel.selectedSong) { song in
                 SongItem(title: song.title)
             }
             .onChange(of: viewModel.selectedSong) { _, selectedSong in
                 guard let song = selectedSong else { return }
-                audioManager.play(path: song.path)
+                audioManager.play(path: song.filePath)
             }
             
             VStack {
@@ -48,7 +53,7 @@ struct PreferencesView: View {
                         viewModel.setPreviousSong()
                         
                         guard let song: Song = viewModel.selectedSong else { return }
-                        audioManager.play(path: song.path)
+                        audioManager.play(path: song.filePath)
                     }) {
                         Image(systemName: "backward.circle")
                     }
@@ -61,7 +66,7 @@ struct PreferencesView: View {
                         viewModel.setNextSong()
                         
                         guard let song: Song = viewModel.selectedSong else { return }
-                        audioManager.play(path: song.path)
+                        audioManager.play(path: song.filePath)
                     }) {
                         Image(systemName: "forward.circle")
                     }
@@ -73,7 +78,38 @@ struct PreferencesView: View {
             }
             .padding()
         }
+        .overlay {
+            if viewModel.isLoading {
+                ProgressView()
+            }
+        }
         .navigationTitle(title)
+        .toolbar {
+            ToolbarItem {
+                Button("", systemImage: "pencil") {
+                    isPresented.toggle()
+                }
+            }
+        }
+        .alert("Rename Preference", isPresented: $isPresented) {
+            TextField("", text: $newTitle, prompt: Text("Enter new name"))
+            
+            Button("OK") {
+                title = newTitle
+                
+                Task {
+                    await viewModel.renamePreference(
+                        withId: id,
+                        newTitle: newTitle
+                    )
+                }
+            }
+        }
+        .onAppear {
+            Task {
+                await viewModel.getSongs(withId: id)
+            }
+        }
         .onDisappear {
             audioManager.stop()
         }
@@ -82,7 +118,7 @@ struct PreferencesView: View {
 
 #Preview {
     NavigationStack {
-        PreferencesView(title: "Preferences 1")
+        PreferencesView(id: 1, title: "Preferences 1")
             .environmentObject(AudioManager())
     }
 }

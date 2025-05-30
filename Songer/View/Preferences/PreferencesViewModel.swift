@@ -9,12 +9,8 @@ import AVFAudio
 import Foundation
 
 class PreferencesViewModel: ObservableObject {
-    let songs: [Song] = [
-        Song(id: 1, title: "24K magic", path: "test_tone.wav"),
-        Song(id: 2, title: "Don't", path: "test_tone.wav"),
-        Song(id: 3, title: "Unstoppable", path: "test_tone.wav"),
-    ]
-    
+    @Published var isLoading: Bool = false
+    @Published var songs: [Song] = []
     @Published var selectedSong: Song? = nil
     
     private var selectedSongIndex: Int? {
@@ -35,5 +31,58 @@ class PreferencesViewModel: ObservableObject {
         
         let nextIndex = (currentIndex + 1) % songs.count
         selectedSong = songs[nextIndex]
+    }
+    
+    @MainActor
+    func getSongs(withId id: Int) async {
+        isLoading = true
+        
+        defer {
+            isLoading = false
+        }
+        
+        do {
+            songs = try await NetworkManager.shared.getAll(path: "songs/\(id)")
+        } catch let error as NetworkError {
+            switch error {
+            case .invalidURL:
+                print("Invalid URL")
+            case .badResponse:
+                print("Bad response")
+            case .decodingFailed:
+                print("Decoding failed")
+            case .encodingFailed:
+                print("Encoding failed")
+            }
+        } catch {
+            print("Unexpected error: \(error)")
+        }
+    }
+    
+    @MainActor
+    func renamePreference(withId id: Int, newTitle: String) async {
+        isLoading = true
+        
+        defer {
+            isLoading = false
+        }
+        
+        do {
+            let renamePreferenceRequest = RenamePreferenceRequest(title: newTitle)
+            _ = try await NetworkManager.shared.update(path: "preferences/\(id)", data: renamePreferenceRequest)
+        } catch let error as NetworkError {
+            switch error {
+            case .invalidURL:
+                print("Invalid URL")
+            case .badResponse:
+                print("Bad response")
+            case .decodingFailed:
+                print("Decoding failed")
+            case .encodingFailed:
+                print("Encoding failed")
+            }
+        } catch {
+            print("Unexpected error: \(error)")
+        }
     }
 }

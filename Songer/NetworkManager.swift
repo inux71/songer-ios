@@ -62,6 +62,38 @@ class NetworkManager {
         }
     }
     
+    func update<T: Codable>(path: String, data: T) async throws -> T {
+        guard let url = URL(string: "\(basePath)\(path)") else {
+            throw NetworkError.invalidURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "PATCH"
+        request.setValue(
+            "application/json",
+            forHTTPHeaderField: "Content-Type"
+        )
+        
+        guard let jsonData = try? JSONEncoder().encode(data) else {
+            throw NetworkError.encodingFailed
+        }
+        
+        let (data, response) = try await URLSession.shared.upload(
+            for: request,
+            from: jsonData
+        )
+        
+        guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
+            throw NetworkError.badResponse
+        }
+        
+        do {
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            throw NetworkError.decodingFailed
+        }
+    }
+    
     func delete(path: String) async throws -> Bool {
         guard let url = URL(string: "\(basePath)\(path)") else {
             throw NetworkError.invalidURL

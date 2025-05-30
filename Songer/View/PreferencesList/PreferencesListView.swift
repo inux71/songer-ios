@@ -13,7 +13,10 @@ struct PreferencesListView: View {
     var body: some View {
         List {
             ForEach(viewModel.filteredPreferences, id: \.id) { preference in
-                NavigationLink(destination: PreferencesView(title: preference.title)) {
+                NavigationLink(destination: PreferencesView(
+                    id: preference.id,
+                    title: preference.title
+                )) {
                     PreferencesListItem(
                         title: preference.title,
                         genres: preference.genres
