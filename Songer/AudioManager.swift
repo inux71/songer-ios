@@ -5,18 +5,18 @@
 //  Created by Kacper Grabiec on 23/04/2025.
 //
 
-import AVFAudio
+import AVFoundation
 import Foundation
 
 class AudioManager : ObservableObject {
-    private var audioPlayer: AVAudioPlayer?
+    private var audioPlayer: AVPlayer?
     private var timer: Timer?
     
     @Published var isPlaying: Bool = false
     @Published var currentTime: TimeInterval? = 0
     
     var duration: TimeInterval? {
-        audioPlayer?.duration
+        audioPlayer?.currentItem?.duration.seconds
     }
     
     var timeRemaining: TimeInterval? {
@@ -30,12 +30,14 @@ class AudioManager : ObservableObject {
         timer?.invalidate()
         
         timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { _ in
-            self.currentTime = self.audioPlayer?.currentTime ?? 0
+            self.currentTime = self.audioPlayer?.currentTime().seconds ?? 0
         }
     }
     
     func stop() {
-        audioPlayer?.stop()
+        audioPlayer?.pause()
+        audioPlayer = nil
+        
         timer?.invalidate()
         
         isPlaying = false
@@ -44,38 +46,31 @@ class AudioManager : ObservableObject {
     func play(path: String) {
         stop()
         
-        guard let path = Bundle.main.path(forResource: path, ofType: nil) else {
-            print("Audio file not found!")
-            
+        guard let url = URL(string: path) else {
+            print("Invalid URL: \(path)")
             return
         }
         
-        let url = URL(fileURLWithPath: path)
+        audioPlayer = AVPlayer(url: url)
+        audioPlayer?.play()
+        startTimer()
         
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: url)
-            audioPlayer?.play()
-            startTimer()
-            
-            isPlaying = true
-        } catch {
-            print("Error playing audio: \(error)")
-        }
+        isPlaying = true
     }
     
     func playPause() {
-        guard let isPlaying: Bool = audioPlayer?.isPlaying else { return }
+        guard let audioPlayer = audioPlayer else { return }
         
         if isPlaying {
-            audioPlayer?.pause()
+            audioPlayer.pause()
             timer?.invalidate()
             
-            self.isPlaying = false
+            isPlaying = false
         } else {
-            audioPlayer?.play()
+            audioPlayer.play()
             startTimer()
             
-            self.isPlaying = true
+            isPlaying = true
         }
     }
 }

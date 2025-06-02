@@ -25,12 +25,14 @@ struct PreferencesView: View {
     
     var body: some View {
         ZStack(alignment: .bottom) {
-            List(viewModel.songs, id: \.id, selection: $viewModel.selectedSong) { song in
+            List(viewModel.songs, id: \.id) { song in
                 SongItem(title: song.title)
-            }
-            .onChange(of: viewModel.selectedSong) { _, selectedSong in
-                guard let song = selectedSong else { return }
-                audioManager.play(path: song.filePath)
+                    .onTapGesture {
+                        viewModel.selectedSong = song
+                        
+                        let path: String = NetworkConfiguration.baseURL + song.filePath
+                        audioManager.play(path: path)
+                    }
             }
             
             VStack {
@@ -40,7 +42,7 @@ struct PreferencesView: View {
                     
                     Spacer()
                     
-                    Text(audioManager.timeRemaining?.formatted ?? "")
+                    //Text(audioManager.timeRemaining?.formatted ?? "")
                 }
                 
                 ProgressView(
@@ -53,7 +55,8 @@ struct PreferencesView: View {
                         viewModel.setPreviousSong()
                         
                         guard let song: Song = viewModel.selectedSong else { return }
-                        audioManager.play(path: song.filePath)
+                        let path: String = NetworkConfiguration.baseURL + song.filePath
+                        audioManager.play(path: path)
                     }) {
                         Image(systemName: "backward.circle")
                     }
@@ -66,7 +69,8 @@ struct PreferencesView: View {
                         viewModel.setNextSong()
                         
                         guard let song: Song = viewModel.selectedSong else { return }
-                        audioManager.play(path: song.filePath)
+                        let path: String = NetworkConfiguration.baseURL + song.filePath
+                        audioManager.play(path: path)
                     }) {
                         Image(systemName: "forward.circle")
                     }

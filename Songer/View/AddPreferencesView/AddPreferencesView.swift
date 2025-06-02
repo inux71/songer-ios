@@ -54,19 +54,25 @@ struct AddPreferencesView: View {
                         
                         HStack {
                             Button(action: {
+                                audioManager.stop()
+                                
                                 viewModel.currentSongIndex += 1
                             }) {
                                 Image(systemName: "xmark.circle")
                             }
                             
                             Button(action: {
-                                audioManager.play(path: viewModel.songs[viewModel.currentSongIndex].filePath)
+                                let path: String = NetworkConfiguration.baseURL + viewModel.songs[viewModel.currentSongIndex].filePath
+                                
+                                audioManager.play(path: path)
                             }) {
                                 Image(systemName: "play.circle")
                             }
                             .font(.system(size: 64))
                             
                             Button(action: {
+                                audioManager.stop()
+                                
                                 viewModel.likedGenres.insert(viewModel.songs[viewModel.currentSongIndex].genre)
                                 viewModel.currentSongIndex += 1
                             }) {

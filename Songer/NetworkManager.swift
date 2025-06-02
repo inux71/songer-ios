@@ -10,10 +10,11 @@ import Foundation
 class NetworkManager {
     static let shared = NetworkManager()
     
-    private let basePath: String = "http://127.0.0.1:8000/"
-    
-    func getAll<T: Codable>(path: String) async throws -> [T] {
-        guard let url = URL(string: "\(basePath)\(path)") else {
+    func getAll<T: Codable>(
+        path: String,
+        decodingStrategy: JSONDecoder.KeyDecodingStrategy = .convertFromSnakeCase
+    ) async throws -> [T] {
+        guard let url = URL(string: "\(NetworkConfiguration.baseURL)\(path)") else {
             throw NetworkError.invalidURL
         }
         
@@ -24,14 +25,17 @@ class NetworkManager {
         }
         
         do {
-            return try JSONDecoder().decode([T].self, from: data)
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = decodingStrategy
+            
+            return try decoder.decode([T].self, from: data)
         } catch {
             throw NetworkError.decodingFailed
         }
     }
     
     func create<T: Codable>(path: String, data: T) async throws -> T {
-        guard let url = URL(string: "\(basePath)\(path)") else {
+        guard let url = URL(string: "\(NetworkConfiguration.baseURL)\(path)") else {
             throw NetworkError.invalidURL
         }
         
@@ -63,7 +67,7 @@ class NetworkManager {
     }
     
     func update<T: Codable>(path: String, data: T) async throws -> T {
-        guard let url = URL(string: "\(basePath)\(path)") else {
+        guard let url = URL(string: "\(NetworkConfiguration.baseURL)\(path)") else {
             throw NetworkError.invalidURL
         }
         
@@ -95,7 +99,7 @@ class NetworkManager {
     }
     
     func delete(path: String) async throws -> Bool {
-        guard let url = URL(string: "\(basePath)\(path)") else {
+        guard let url = URL(string: "\(NetworkConfiguration.baseURL)\(path)") else {
             throw NetworkError.invalidURL
         }
         
