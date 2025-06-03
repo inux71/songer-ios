@@ -13,16 +13,19 @@ class AudioManager : ObservableObject {
     private var timer: Timer?
     
     @Published var isPlaying: Bool = false
-    @Published var currentTime: TimeInterval? = 0
+    @Published var currentTime: TimeInterval = 0
     
-    var duration: TimeInterval? {
-        audioPlayer?.currentItem?.duration.seconds
+    var duration: TimeInterval {
+        let seconds: TimeInterval = audioPlayer?.currentItem?.duration.seconds ?? 0
+        
+        if seconds.isNaN {
+            return 0
+        } else {
+            return seconds
+        }
     }
     
-    var timeRemaining: TimeInterval? {
-        guard let duration = duration else { return nil }
-        guard let currentTime = currentTime else { return duration }
-        
+    var timeRemaining: TimeInterval {
         return duration - currentTime
     }
     
@@ -37,6 +40,8 @@ class AudioManager : ObservableObject {
     func stop() {
         audioPlayer?.pause()
         audioPlayer = nil
+        
+        currentTime = 0
         
         timer?.invalidate()
         

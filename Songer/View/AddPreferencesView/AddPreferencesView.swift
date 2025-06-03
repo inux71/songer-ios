@@ -45,11 +45,11 @@ struct AddPreferencesView: View {
                         
                         ProgressView(
                             value: audioManager.currentTime,
-                            total: audioManager.duration ?? 1
+                            total: audioManager.duration == 0 ? 1 : audioManager.duration
                         ) {
                             EmptyView()
                         } currentValueLabel: {
-                            Text(audioManager.currentTime?.formatted ?? "")
+                            Text(audioManager.currentTime.formatted)
                         }
                         
                         HStack {

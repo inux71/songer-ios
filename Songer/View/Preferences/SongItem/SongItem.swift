@@ -19,7 +19,11 @@ struct SongItem: View {
             Image(systemName: "music.note")
             
             Text(title)
+            
+            Spacer()
         }
+        .frame(maxWidth: .infinity)
+        .contentShape(Rectangle())
     }
 }
 

@@ -27,6 +27,7 @@ struct PreferencesView: View {
         ZStack(alignment: .bottom) {
             List(viewModel.songs, id: \.id) { song in
                 SongItem(title: song.title)
+                    .containerShape(Rectangle())
                     .onTapGesture {
                         viewModel.selectedSong = song
                         
@@ -42,12 +43,12 @@ struct PreferencesView: View {
                     
                     Spacer()
                     
-                    //Text(audioManager.timeRemaining?.formatted ?? "")
+                    Text(audioManager.timeRemaining.formatted)
                 }
                 
                 ProgressView(
                     value: audioManager.currentTime,
-                    total: audioManager.duration ?? 1
+                    total: audioManager.duration == 0 ? 1 : audioManager.duration
                 )
                 
                 HStack {
@@ -81,6 +82,7 @@ struct PreferencesView: View {
                 .font(.system(size: 32))
             }
             .padding()
+            .background(Color.black)
         }
         .overlay {
             if viewModel.isLoading {
