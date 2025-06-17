@@ -26,7 +26,10 @@ struct PreferencesView: View {
     var body: some View {
         ZStack(alignment: .bottom) {
             List(viewModel.songs, id: \.id) { song in
-                SongItem(title: song.title)
+                SongItem(
+                    title: song.title,
+                    isSelected: viewModel.selectedSong == song
+                )
                     .containerShape(Rectangle())
                     .onTapGesture {
                         viewModel.selectedSong = song

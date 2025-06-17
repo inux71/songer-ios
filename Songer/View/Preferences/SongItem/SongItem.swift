@@ -9,18 +9,25 @@ import SwiftUI
 
 struct SongItem: View {
     let title: String
+    let isSelected: Bool
     
-    init(title: String) {
+    init(title: String, isSelected: Bool) {
         self.title = title
+        self.isSelected = isSelected
     }
     
     var body: some View {
         HStack {
             Image(systemName: "music.note")
+                .foregroundStyle(isSelected ? .green : .primary)
             
             Text(title)
+                .fontWeight(isSelected ? .bold : .regular)
+                .foregroundStyle(isSelected ? .green : .primary)
             
             Spacer()
+            
+            
         }
         .frame(maxWidth: .infinity)
         .contentShape(Rectangle())
@@ -28,5 +35,5 @@ struct SongItem: View {
 }
 
 #Preview {
-    SongItem(title: "Song 1")
+    SongItem(title: "Song 1", isSelected: true)
 }
