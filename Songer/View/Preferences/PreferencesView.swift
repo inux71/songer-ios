@@ -85,7 +85,7 @@ struct PreferencesView: View {
                 .font(.system(size: 32))
             }
             .padding()
-            .background(Color.black)
+            .background(Material.ultraThin)
         }
         .overlay {
             if viewModel.isLoading {
